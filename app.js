@@ -87,7 +87,8 @@
     if (sel) sel.onchange = () => { state.setId = sel.value; save(); home(); };
     app.querySelectorAll("[data-mode]").forEach((b) => (b.onclick = () => start(b.dataset.mode)));
     document.getElementById("resetBtn").onclick = () => {
-      if (!confirm("Reset all progress for this question set?")) return;
+      const b = document.getElementById("resetBtn");
+      if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = "Tap again to erase your progress"; b.style.color = "var(--bad)"; return; }
       qs.forEach((q) => delete state.stats[key(q)]);
       save();
       home();
@@ -159,10 +160,7 @@
     app.querySelectorAll("[data-v]").forEach((b) => (b.onclick = () => answer(b.dataset.v === "1")));
     document.getElementById("prevBtn").onclick = () => { session.i--; renderQuestion(); };
     document.getElementById("nextBtn").onclick = next;
-    document.getElementById("quitBtn").onclick = () => {
-      if (doneCount && !confirm("Quit this session?")) return;
-      home();
-    };
+    document.getElementById("quitBtn").onclick = home;
   }
 
   function answer(val) {
@@ -253,10 +251,7 @@
     else if (k === "arrowleft" && session.i > 0) { session.i--; renderQuestion(); }
   });
 
-  document.getElementById("homeBtn").onclick = () => {
-    if (session && session.answers.some((a) => a !== null) && !confirm("Quit this session?")) return;
-    home();
-  };
+  document.getElementById("homeBtn").onclick = home;
 
   home();
 })();
